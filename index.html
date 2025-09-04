@@ -1,0 +1,73 @@
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Loading...</title>
+        <style>
+            body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        </style>
+    </head>
+    <body>
+        <p>情報を送信中です...</p>
+        <p>このウィンドウは自動で閉じます。</p>
+
+        <!-- LIFF SDKを読み込み -->
+        <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+        <script>
+            async function main() {
+                // LIFFを初期化
+                const LIFF_ID = "★ここにStep 1で取得した「LIFF ID」を貼り付け★";
+                await liff.init({ liffId: LIFF_ID });
+
+                if (!liff.isLoggedIn()) {
+                    // ユーザーがLINEにログインしていない場合は、ログインを促す
+                    liff.login();
+                    return;
+                }
+
+                // URLの?以降のパラメータを取得 (例: ?source=store)
+                const urlParams = new URLSearchParams(window.location.search);
+                const source = urlParams.get('source') || 'default'; // パラメータがなければ'default'
+
+                // ユーザーのプロフィール情報を取得
+                const profile = await liff.getProfile();
+                const userId = profile.userId;
+
+                // Step 2で作成したGASのバックエンドに送信するデータ
+                const postData = {
+                    userId: userId,
+                    source: source
+                };
+
+                const GAS_URL = "★ここにStep 2でデプロイした「ウェブアプリURL」を貼り付け★";
+
+                try {
+                    // GASにデータをPOSTメソッドで送信
+                    const response = await fetch(GAS_URL, {
+                        method: 'POST',
+                        // GASのdoPostで受け取るための特殊なContent-Type
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(postData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if(result.status === 'success') {
+                        // 成功したらLIFFウィンドウを閉じる
+                        liff.closeWindow();
+                    } else {
+                         // エラーがあれば表示
+                        alert("エラーが発生しました: " + result.message);
+                    }
+
+                } catch (error) {
+                    console.error('送信エラー:', error);
+                    alert('メッセージの送信に失敗しました。');
+                }
+            }
+            main();
+        </script>
+    </body>
+    </html>
+    
