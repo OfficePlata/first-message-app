@@ -17,7 +17,7 @@
         <script>
             async function main() {
                 // LIFFを初期化
-                const LIFF_ID = "★ここにStep 1で取得した「LIFF ID」を貼り付け★";
+                const LIFF_ID = "2008056194-gVNzOzvn";
                 await liff.init({ liffId: LIFF_ID });
 
                 if (!liff.isLoggedIn()) {
@@ -40,7 +40,7 @@
                     source: source
                 };
 
-                const GAS_URL = "★ここにStep 2でデプロイした「ウェブアプリURL」を貼り付け★";
+                const GAS_URL = "https://script.google.com/macros/s/AKfycbwsp8jX1uIDRAGn4qF14reSqh3j7bq_SIHoGxM43P2yo7Gq4ZNw6xHsin-mK-yrS-iugg/exec";
 
                 try {
                     // GASにデータをPOSTメソッドで送信
